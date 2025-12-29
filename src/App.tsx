@@ -1,19 +1,27 @@
-import { Button } from "@/components/ui/button"
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import VerifyOtpPage from "./pages/VerifyOtp";
+import { getAccessToken } from "./lib/auth-store";
+import type { JSX } from "react";
+import { Toaster } from "./components/ui/toaster";
 
-function App() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-          My Spring Boot Frontend
-        </h1>
-        <p className="text-gray-500">Connected to GitHub Pages & Render</p>
-        <Button onClick={() => alert("Hello!")}>
-          Click Me (I am a Shadcn Component)
-        </Button>
-      </div>
-    </div>
-  )
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  return getAccessToken() ? children : <Navigate to="/login" />;
 }
 
-export default App
+export default function App() {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+      <Toaster />
+    </HashRouter>
+  );
+}
